@@ -10,33 +10,33 @@ function _init()
   dialog="hi! i'm daniel. thanks for coming in. i hope you did not have to wait long?\n❎"
   self.interact=function(self)
    dialog="due to covid we can't do these interviews in person. but video calls seem impersonal.\n❎"
-	  self.interact=function(self)
-	   dialog="i mean, if i can't snatch the whiteboard marker from your hand, is it even an interview?\n❎"
-		  self.interact=function(self)
-		   dialog="fast forward several pico-8 tutorials, and here we are!\nin \f2the metaverse\f0!\n❎"
-			  self.interact=function(self)
-			   dialog="please grab a metamarker and let's attack that shiny white surface to the north!"
-			   p.alert=whiteboard
-			   whiteboard.interact=function()
-			    dialog="alright, a warm-up task. please show me how you reverse a linked list!\n❎"
-				   whiteboard.interact=function()
-				    dialog="\f2...\n\n\n❎"
-					   whiteboard.interact=function()
-					    dialog="\f2...\nyou think for a moment...\n\n❎"
-						   whiteboard.interact=function()
-						    dialog="\f2...\nyou think for a moment...\n...\n❎"
-							   whiteboard.interact=function()
-							    dialog="\f2when you touch the marker to the whiteboard...\n\n❎"
-								   whiteboard.interact=function()
-								    dialog="\f2when you touch the marker to the whiteboard...\n\fethe metaverse\f2 opens up!\nyou fall into the whiteboard!"
-									   whiteboard.interact=into_the_metaverse
-						     end
-					     end
-				     end
-			     end
-		     end
-	     end
-	    end
+   self.interact=function(self)
+    dialog="i mean, if i can't snatch the whiteboard marker from your hand, is it even an interview?\n❎"
+    self.interact=function(self)
+     dialog="fast forward several pico-8 tutorials, and here we are!\nin \f2the metaverse\f0!\n❎"
+     self.interact=function(self)
+      dialog="please grab a metamarker and let's attack that shiny white surface to the north!"
+      p.alert=whiteboard
+      whiteboard.interact=function()
+       dialog="alright, a warm-up task. please show me how you reverse a linked list!\n❎"
+       whiteboard.interact=function()
+        dialog="\f2...\n\n\n❎"
+        whiteboard.interact=function()
+         dialog="\f2...\nyou think for a moment...\n\n❎"
+         whiteboard.interact=function()
+          dialog="\f2...\nyou think for a moment...\n...\n❎"
+          whiteboard.interact=function()
+           dialog="\f2when you touch the marker to the whiteboard...\n\n❎"
+           whiteboard.interact=function()
+            dialog="\f2when you touch the marker to the whiteboard...\n\fethe metaverse\f2 opens up!\nyou fall into the whiteboard!"
+            whiteboard.interact=into_the_metaverse
+           end
+          end
+         end
+        end
+       end
+      end
+     end
     end
    end
   end
@@ -106,7 +106,7 @@ function _draw()
  foreach(particles,function(p)
   if p.size==nil then p.size=0 end
   if p.life>5 then
-  	p.size+=0.1
+   p.size+=0.1
   end
   p.x+=0.25-rnd(0.5)
   p.y-=rnd(0.5)
@@ -152,7 +152,7 @@ function sortobjects()
    t[j],t[j-1]=t[j-1],t[j]
    j-=1
   end
-	end
+ end
 end
 
 function _update()
@@ -179,8 +179,8 @@ function update_player()
  end
  if p.dash>tonum(d) then
   p.dash-=1
- 	s=3.5
- 	add(particles,{x=p.x+4,y=p.y+6,life=10})
+  s=3.5
+  add(particles,{x=p.x+4,y=p.y+6,life=10})
  end
  if btn(⬅️) then p.x-=s end
  if btn(➡️) then p.x+=s end
@@ -231,8 +231,8 @@ function update_pet(o)
   if rnd(100)<20 then
    o.x+=dx/adx
    o.y+=dy/ady
-	  if rnd(100)<5 then
- 	  sfx(o.sfx) end
+   if rnd(100)<5 then
+    sfx(o.sfx) end
   end
  end
 end
@@ -243,15 +243,15 @@ function wander(o)
   o.ay=o.y
  end
  if rnd(100)<2 then
-		local dx=o.ax-o.x
-		local dy=o.ay-o.y
-		local t=atan2(dx,dy)+rnd(0.1)
-		if sin(f/30)>0.5 then
-		 o.x-=cos(t)
-		 o.y-=sin(t)
-		else
-		 o.x+=cos(t)
-		 o.y+=sin(t)
+  local dx=o.ax-o.x
+  local dy=o.ay-o.y
+  local t=atan2(dx,dy)+rnd(0.1)
+  if sin(f/30)>0.5 then
+   o.x-=cos(t)
+   o.y-=sin(t)
+  else
+   o.x+=cos(t)
+   o.y+=sin(t)
   end
  end
 end
@@ -273,12 +273,12 @@ function wwrap(s,w)
  for k=1, #wrds do
   wrd=strspl(wrds[k],"\n")
   for n=1,#wrd do
-	  if len+#wrd[n]>w or n>1 then
-	   ret=ret.."\n"
-	   len=0
-	  end
-	  ret=ret..wrd[n].." "
-	  len+=#wrd[n]+1
+   if len+#wrd[n]>w or n>1 then
+    ret=ret.."\n"
+    len=0
+   end
+   ret=ret..wrd[n].." "
+   len+=#wrd[n]+1
   end
  end
  if sub(ret,#ret-1,#ret-1)=="❎" then
