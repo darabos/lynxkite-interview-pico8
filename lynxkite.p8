@@ -118,25 +118,25 @@ function shd(s,x,y,f)
  spr(s,x,y,1,1,f)
 end
 function draw_office()
+ cls()
  map()
 end
 function draw_metaverse()
  --cyber background
- cls(12)
+ cls(1)
  local tt=t()/4
  local s=sin(tt/3)*30+160
  local vx=s*sin(tt/8)/2
- pal(12,7) --blue to white
  for i=1,100 do
   local p=(i+tt)*0.01
   line(
    s*sin(p*3)+vx+64,0,
    s*cos(p*7)+vx+64,96,
-   i%8+8)
+   i%3+5)
   line(
    s*sin(p*3)+vx+65,0,
    s*cos(p*7)+vx+65,96,
-   i%8+8)
+   i%3+5)
  end
  pal()
  --whiteboard
@@ -195,7 +195,6 @@ function draw_metaverse()
 end
 f=0
 function _draw()
- cls()
  background()
  foreach(particles,function(p)
   if p.size==nil then p.size=0 end
