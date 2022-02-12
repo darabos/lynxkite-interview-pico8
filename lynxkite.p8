@@ -399,12 +399,19 @@ function into_the_metaverse()
  p.y=60
  background=draw_metaverse
  objects={p,
-  slot(20,30,10),
-  slot(25,70,11),
-  slot(40,30,12),
-  slot(60,30,14),
-  slot(80,30),
-  slot(50,70),
+  slot(25,70,10),
+  slot(16,55,11),
+  slot(25,40,14),
+  slot(24,18,12),
+  slot(60,13,11),
+  slot(96,26,14),
+  slot(100,53,11),
+  slot(78,70,12),
+  slot(40,55,10),
+  slot(65,30,14),
+  slot(70,54,10),
+  slot(55,42,12),
+  slot(110,70),
  }
 end
 
@@ -429,9 +436,11 @@ end
 function slot_interact(s)
  dialog="looks like a memory location into which a data cube fits."
  if s.data==nil and p.data!=nil then
+  dialog="you place the data cube into the memory location."
   s.data=p.data
   p.data=nil
  elseif s.data!=nil and p.data==nil then
+  dialog="you take the data cube from the memory location."
   p.data=s.data
   s.data=nil
  end
