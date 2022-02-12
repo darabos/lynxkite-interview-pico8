@@ -402,22 +402,22 @@ function into_the_metaverse()
  p.y=60
  background=draw_metaverse
  objects={p,
-	 {x=125,y=6,draw=function(s)
-	  fancynumbers(getscore()+3,s.x,s.y)
+	 {x=116,y=6,draw=function(s)
+	  fancynumbers(getscore(),s.x,s.y)
 	 end},
  }
  slots={
   slot(25,70,10,{10}),
   slot(16,55,11,{10,14}),
-  slot(25,40,14,{14,12}),
-  slot(24,18,12,{12,14}),
-  slot(60,13,11,{14,10}),
-  slot(96,26,14,{10,12}),
+  slot(25,40,12,{14,12}),
+  slot(24,18,14,{12,14}),
+  slot(60,13,14,{14,10}),
+  slot(96,26,11,{10,12}),
   slot(100,53,11,{12,14}),
   slot(78,70,12,{14,11}),
   slot(40,55,10,{11,10}),
-  slot(65,30,14,{10,11}),
-  slot(70,54,10,{11,12}),
+  slot(65,30,10,{10,11}),
+  slot(70,54,14,{11,12}),
   slot(55,42,12,{12}),
   slot(110,70),
  }
@@ -470,16 +470,17 @@ function getscore()
   end
 	 --dog
   if slots[i].data!=nil
-   and (slots[i].data==slots[i].wires[0]
-   or slots[i].data==slots[i].wires[1]) then
+   and (slots[i].data==slots[i].wires[1]
+   or slots[i].data==slots[i].wires[2]) then
    sc+=1
   end
 	 --cat
-  if i<n and sc>0 and slots[i].data==slots[i+1].data then
+  if (i<n and slots[i].data==slots[i+1].data)
+   or (i>1 and slots[i].data==slots[i-1].data) then
    sc-=1
   end
  end
- return sc
+ return max(0,sc)
 end
 
 function ssh(sx,sy,sw,sh,dx,dy)
@@ -494,6 +495,7 @@ end
 
 function fancynumbers(n,x,y)
  local s=tostr(n).."00"
+ if n==0 then s="0" end
  x-=#s*6+(#s-1)\3*3
  for i=1,#s do
   local c=tonum(sub(s,i,i))
