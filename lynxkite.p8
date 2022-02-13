@@ -316,14 +316,18 @@ function update_player()
  if btn(➡️) then p.x+=s end
  if btn(⬆️) then p.y-=s/1.2 end
  if btn(⬇️) then p.y+=s/1.2 end
- p.x=mid(4,p.x,116)
- p.y=mid(3,p.y,79)
+ contain(p)
  if btnp(❎) then
   local c=closest(p)
   if c!=nil then
    c.interact(c)
   end
  end
+end
+
+function contain(p)
+ p.x=mid(4,p.x,116)
+ p.y=mid(3,p.y,79)
 end
 
 function draw_player(p)
@@ -367,14 +371,51 @@ function update_pet(o)
  local dy=p.y-o.y
  local adx=abs(dx)
  local ady=abs(dy)
- if adx>0 and adx<20
-  and ady>0 and ady<17 then
-  if rnd(100)<20 then
+ local range=20
+ local follow_chance=20
+ if location=="metaverse" then
+  range=30
+  follow_chance=50
+ end
+ if adx>0 and adx<range
+  and ady>0 and ady<range/1.2 then
+  if rnd(100)<follow_chance then
+   dialog=tostr(adx).." "..tostr(ady)
    o.x+=dx/adx
    o.y+=dy/ady
    if rnd(100)<5 then
     sfx(o.sfx) end
   end
+  return
+ end
+ if o.other!=nil then
+	 dx=o.other.x-o.x
+	 dy=o.other.y-o.y
+	 adx=abs(dx)+rnd(1)-0.5
+	 ady=abs(dy)+rnd(1)-0.5
+	 if o.mode=="chase" and adx>0 and ady>0 then
+	  if rnd(100)<follow_chance then
+	   o.x+=2*dx/adx
+	   o.y+=2*dy/ady
+	   if rnd(100)<5 then
+	    sfx(o.sfx) end
+	  end
+	  if rnd(100)<1 then
+ 	  o.mode=nil
+ 	 end
+	 elseif adx>0 and adx<range
+	  and ady>0 and ady<range/1.2 then
+	  if rnd(100)<follow_chance then
+	   o.x-=3*dx/adx
+	   o.y-=3*dy/ady
+	   if rnd(100)<5 then
+	    sfx(o.sfx) end
+	   contain(o)
+	  end
+	 elseif o.other.mode!="chase"
+	  and rnd(100)<1 then
+	  o.mode="chase"
+	 end
  end
 end
 
@@ -403,7 +444,19 @@ function into_the_metaverse()
  p.x=60
  p.y=60
  background=draw_metaverse
- objects={p,
+ local dog={
+  x=21, y=10, sprite=51,flip=0,draw=dance,
+  update=update_pet,sfx=11,
+  interact=function()
+   dialog="you pet the dog."end}
+ local cat={
+  x=101, y=25, sprite=53,flip=1,draw=dance,
+  update=update_pet,sfx=10,
+  interact=function()
+   dialog="the cat sniffs your hand."end}
+ dog.other=cat
+ cat.other=dog
+ objects={p,cat,dog,
   {x=116,y=6,draw=function(s)
     fancynumbers(getscore(),s.x,s.y)
    end},
