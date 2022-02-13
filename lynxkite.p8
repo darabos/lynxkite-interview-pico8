@@ -326,8 +326,13 @@ function update_player()
 end
 
 function contain(p)
- p.x=mid(4,p.x,116)
- p.y=mid(3,p.y,79)
+ if location=="office" then
+  p.x=mid(4,p.x,116)
+  p.y=mid(3,p.y,79)
+ elseif location=="metaverse" then
+  p.x=mid(8,p.x,112)
+  p.y=mid(6,p.y,76)
+ end
 end
 
 function draw_player(p)
@@ -371,43 +376,56 @@ function update_pet(o)
  local dy=p.y-o.y
  local adx=abs(dx)
  local ady=abs(dy)
+ local ndx=dx>0 and 1 or -1
+ local ndy=dy>0 and 1 or -1
+ ndy/=1.2
  local range=20
  local follow_chance=20
  if location=="metaverse" then
   range=30
   follow_chance=50
  end
- if adx>0 and adx<range
-  and ady>0 and ady<range/1.2 then
+ if adx<range
+  and ady<range/1.2 then
+  if o.flip%2==0 then
+   o.flip=1-ndx
+  end
   if rnd(100)<follow_chance then
-   dialog=tostr(adx).." "..tostr(ady)
-   o.x+=dx/adx
-   o.y+=dy/ady
+   o.x+=ndx
+   o.y+=ndy
    if rnd(100)<5 then
     sfx(o.sfx) end
   end
   return
  end
  if o.other!=nil then
-	 dx=o.other.x-o.x
-	 dy=o.other.y-o.y
-	 adx=abs(dx)+rnd(1)-0.5
-	 ady=abs(dy)+rnd(1)-0.5
-	 if o.mode=="chase" and adx>0 and ady>0 then
-	  if rnd(100)<follow_chance then
-	   o.x+=2*dx/adx
-	   o.y+=2*dy/ady
+  --the rnd lets them not get stuck on walls.
+	 dx=o.other.x-o.x+rnd(3)-1.5
+	 dy=o.other.y-o.y+rnd(4)-2
+	 adx=abs(dx)
+	 ady=abs(dy)
+  ndx=dx>0 and 1 or -1
+  ndy=dy>0 and 1 or -1
+  ndy/=1.2
+	 if o.mode=="chase" then
+	  if o.flip%2==0 then
+	   o.flip=1-ndx
+	  end
+	  if adx+ady>10
+	   and rnd(100)<follow_chance then
+	   o.x+=2*ndx
+	   o.y+=2*ndy
 	   if rnd(100)<5 then
 	    sfx(o.sfx) end
 	  end
 	  if rnd(100)<1 then
  	  o.mode=nil
  	 end
-	 elseif adx>0 and adx<range
-	  and ady>0 and ady<range/1.2 then
+	 elseif adx<range
+	  and ady<range/1.2 then
 	  if rnd(100)<follow_chance then
-	   o.x-=3*dx/adx
-	   o.y-=3*dy/ady
+	   o.x-=3*ndx
+	   o.y-=3*ndy
 	   if rnd(100)<5 then
 	    sfx(o.sfx) end
 	   contain(o)
@@ -441,8 +459,7 @@ end
 function into_the_metaverse()
  location="metaverse"
  music(3,nil,7)
- p.x=60
- p.y=60
+ p.alert=nil
  background=draw_metaverse
  local dog={
   x=21, y=10, sprite=51,flip=0,draw=dance,
