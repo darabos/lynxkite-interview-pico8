@@ -3,7 +3,7 @@ version 35
 __lua__
 function _init()
  score=nil
- particles={}
+ particles={y=0,draw=draw_particles}
  last_tick=0
  dialog="\npress 🅾️ to dash\npress ❎ to interact"
  p={
@@ -15,7 +15,7 @@ function _init()
   draw=draw_player,
   update=update_player,
  }
- into_the_title()
+ into_the_metaverse()
 end
 function into_the_office()
  location="office"
@@ -69,7 +69,7 @@ function into_the_office()
   end
  end}
  p.alert=daniel
- objects={p,whiteboard,daniel,
+ objects={particles,p,whiteboard,daniel,
  {x=90, y=60, sprite=57,flip=1,draw=dance,
  update=wander,
  interact=function()
@@ -145,7 +145,7 @@ function into_the_title()
 --  sspr(64,32,)
  end}
  p.alert=desk
- objects={p,desk,logo,
+ objects={particles,p,desk,logo,
  {x=85,y=75,sprite=26,flip=3,
   draw=dance,interact=function()
    dialog="is it plastic? or just really healthy?"
@@ -253,22 +253,24 @@ function draw_metaverse()
  end
  pal()
 end
-f=0
-function _draw()
- background()
+function draw_particles()
  foreach(particles,function(p)
   if p.size==nil then p.size=0 end
   if p.life>5 then
    p.size+=0.1
   end
   p.x+=0.25-rnd(0.5)
-  p.y-=rnd(0.5)
+  p.y+=p.vy or -rnd(0.5)
   circfill(p.x,p.y,p.size*p.life,p.color)
   p.life-=1
   if p.life<=0 then
    del(particles,p)
   end
  end)
+end
+f=0
+function _draw()
+ background()
  a=1+f/9
  sortobjects()
  foreach(objects,function(o)
@@ -368,6 +370,7 @@ function update_player()
   elseif location=="metaverse" then
    c=rnd()*8+8
   end
+  particles.y=p.y
   add(particles,{x=p.x+4,y=p.y+6,life=10,color=c})
  end
  if btn(⬅️) then p.x-=s end
@@ -515,19 +518,19 @@ function into_the_metaverse()
 	 o.y=mid(6,o.y,76)
 	end
 	dialog="you see a linked list before you. please reverse the order of its elements."
- local dog={
+ dog={
   x=21, y=10, sprite=51,flip=0,draw=dance,
   update=update_pet,sfx=11,
   interact=function()
    dialog="you pet the dog."end}
- local cat={
+ cat={
   x=101, y=25, sprite=53,flip=1,draw=dance,
   update=update_pet,sfx=10,
   interact=function()
    dialog="the cat sniffs your hand."end}
  dog.other=cat
  cat.other=dog
- objects={p,cat,dog,
+ objects={particles,p,cat,dog,
   {x=116,y=6,draw=function(s)
     fancynumbers(getscore(),s.x,s.y)
    end},
@@ -557,6 +560,7 @@ function slot(x,y,data,wires)
   orig_data=data,wires=wires,
   draw=slot_draw,
   interact=slot_interact,
+  update=slot_update,
  }
 end
 function slot_draw(s)
@@ -572,7 +576,12 @@ function slot_draw(s)
 end
 function slot_interact(s)
  dialog="looks like a memory location into which a data cube fits."
- if s.data==nil and p.data!=nil then
+ if s==leaking and p.data!=nil then
+  dialog="this memory location is leaking! you must fix it before placing a data cube."
+ elseif s==leaking and p.data==nil then
+  dialog="you fix the memory leak.\nlet's hope the cat or dog won't break it again."
+  leaking=nil
+ elseif s.data==nil and p.data!=nil then
   dialog="you place the data cube into the memory location."
   s.data=p.data
   p.data=nil
@@ -586,6 +595,24 @@ function slot_interact(s)
   dialog="this memory location is full."
  end
  score=getscore()
+end
+function slot_update(s)
+ local pets={cat,dog}
+ for i=1,#pets do
+  local p=pets[i]
+  local adx=abs(s.x-p.x)
+  local ady=abs(s.y-p.y)/1.2
+  if s.data==nil
+   and adx+ady<5 then
+   leaking=s
+  end
+ end
+ if s==leaking and rnd(100)<50 then
+  particles.y=s.y
+  add(particles,{
+  x=s.x+4,y=s.y+6,vy=-1-rnd(1),
+  life=12,color=rnd(8)+8})
+ end
 end
 
 function getscore()
