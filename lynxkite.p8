@@ -89,7 +89,7 @@ function into_the_office()
  {x=21, y=10, sprite=51,flip=0,draw=dance,
  update=update_pet,sfx=11,
  interact=function()
-  dialog="you pet the dog.\nyou sure wouldn't want to trip over it while working on the whiteboard."end},
+  dialog="you pet the dog.\nyou sure wouldn't want to step on him while working on the whiteboard."end},
  {x=101, y=25, sprite=53,flip=1,draw=dance,
  update=update_pet,sfx=10,
  interact=function()
@@ -300,6 +300,30 @@ function _draw()
   palt(7,true)
   sspr(104,0,24,24,cx-size,cy-size,size*2+1,size*2+1)
   palt()
+ end
+ --dialog fade
+ if last_dialog!=dialog then
+  dialog_fade=t()
+  last_dialog=dialog
+ end
+ if t()-dialog_fade<0.2 then
+  for i=1,flr(500*(0.2-t()+dialog_fade)) do
+   local y=99+rnd(27)
+   line(2,y,125,y,15)
+  end
+ end
+ --wiring fade
+ if last_wiring!=current_wiring then
+  wiring_fade=t()
+  last_wiring=current_wiring
+ end
+ if wiring_fade and t()-wiring_fade<0.5 then
+  for i=1,flr(500*(0.2-t()+dialog_fade)) do
+	  local y=12+rnd(70)
+	  local x1=16-0.1*y
+	  local x2=112+0.1*y
+   line(x1,y,x2,y,8+rnd(8))
+  end
  end
 end
 
@@ -516,7 +540,7 @@ function into_the_metaverse()
 	 o.x=mid(8,o.x,112)
 	 o.y=mid(6,o.y,76)
 	end
-	dialog="you see a linked list before you. please reverse the order of its elements."
+	wirings=getwirings()
  dog={
   x=21, y=10, sprite=51,flip=0,draw=dance,
   update=update_pet,sfx=11,
@@ -529,50 +553,32 @@ function into_the_metaverse()
    dialog="the cat sniffs your hand."end}
  dog.other=cat
  cat.other=dog
- objects={particles,p,cat,dog,
+ function daniel_dialog(self)
+  if getscore()<minscore then
+   dialog="here's a hint:\ntry to get a higher score!"
+  else
+   local d="great work! ready for the next level?\n\n❎"
+   dialog=d
+   self.interact=function(s)
+    if dialog!=d then
+     daniel_dialog(s)
+    else
+     setwiring(current_wiring+1)
+    end
+   end
+  end
+ end
+ local daniel={x=110, y=60, sprite=17,flip=1,draw=dance,
+ interact=daniel_dialog}
+ objects={particles,p,daniel,
   {x=116,y=6,draw=function(s)
     fancynumbers(getscore(),s.x,s.y)
-   end},
+   end,
+  },
  }
  slots={}
- setwiring(40,40,{
-  slot(25,70,10,{10}),
-  slot(16,55,11,{10,14}),
-  slot(25,40,12,{14,12}),
-  slot(24,18,14,{12,14}),
-  slot(60,13,14,{14,10}),
-  slot(96,26,11,{10,12}),
-  slot(100,53,11,{12,14}),
-  slot(78,70,12,{14,11}),
-  slot(40,55,10,{11,10}),
-  slot(65,30,10,{10,11}),
-  slot(70,54,14,{11,12}),
-  slot(55,42,12,{12}),
-  slot(110,70),
- }) 
- setwiring(40,32,{
-  slot(24,40,10,{}),
-  slot(40,54,11,{}),
-  slot(57,29,12,{}),
-  slot(95,29,14,{}),
-  slot(86,54,10,{}),
-  slot(110,70),
- })
- setwiring(0,40,{
-  slot(40,50,14,{}),
-  slot(72,24,12,{}),
-  slot(110,70),
- })
+ setwiring(3)
 end
-function setwiring(x,y,ss)
- wires={x=x,y=y}
- foreach(slots,function(s)
-  del(objects,s) end)
- slots=ss
- foreach(slots,function(s)
-  add(objects,s) end)
-end
-
 function slot(x,y,data,wires)
  return {
   x=x,y=y,data=data,
@@ -582,6 +588,84 @@ function slot(x,y,data,wires)
   update=slot_update,
  }
 end
+function getwirings()
+ return {
+	 {dialog="let's start with a simple example. a linked list with two elements. let's reverse it!",
+	  minscore=2,
+	  x=0,y=40,slots={
+	  slot(40,50,14,{}),
+	  slot(72,24,12,{}),
+	  slot(110,70),
+	 }},
+	 {dialog="each data cube in the correct location is worth 100 points. cubes of the same color are interchangeable.",
+	  minscore=5,
+	  x=40,y=32,slots={
+	  slot(24,40,10,{}),
+	  slot(40,54,11,{}),
+	  slot(57,29,12,{}),
+	  slot(95,29,14,{}),
+	  slot(86,54,10,{}),
+	  slot(110,70),
+	 }},
+	 {dialog="look our dog has joined you! he likes it when cubes are connected to matching wires. you get 100 pts for each.",
+	  minscore=2,
+	  dog=true,
+	  x=48,y=48,slots={
+	  slot(20,20,12,{14}),
+	  slot(75,20,14,{14,12}),
+	  slot(54,36,10,{12,11}),
+	  slot(65,53,11,{11,10}),
+	  slot(76,68,10,{10}),
+	  slot(110,70),
+	 }},
+	 {dialog="the cat joins too! she doesn't like data cubes of the same color next to each other. she will give -100 pts for each.",
+	  minscore=2,
+	  cat=true,dog=true,
+	  x=40,y=32,slots={
+	  slot(24,40,10,{}),
+	  slot(40,54,11,{}),
+	  slot(57,29,12,{}),
+	  slot(95,29,14,{}),
+	  slot(86,54,10,{}),
+	  slot(110,70),
+	 }},
+	 {dialog="your final test! try to score as many points as you can.",
+	  minscore=15,
+	  cat=true,dog=true,
+	  x=40,y=40,slots={
+	  slot(25,70,10,{10}),
+	  slot(16,55,11,{10,14}),
+	  slot(25,40,12,{14,12}),
+	  slot(24,18,14,{12,14}),
+	  slot(60,13,14,{14,10}),
+	  slot(96,26,11,{10,12}),
+	  slot(100,53,11,{12,14}),
+	  slot(78,70,12,{14,11}),
+	  slot(40,55,10,{11,10}),
+	  slot(65,30,10,{10,11}),
+	  slot(70,54,14,{11,12}),
+	  slot(55,42,12,{12}),
+	  slot(110,70),
+	 }},
+	}
+end
+function setwiring(num)
+ current_wiring=num
+ local w=wirings[num]
+ dialog=w.dialog
+ minscore=w.minscore
+ wires={x=w.x,y=w.y}
+ foreach(slots,function(s)
+  del(objects,s) end)
+ slots=w.slots
+ foreach(slots,function(s)
+  add(objects,s) end)
+ del(objects,cat)
+ del(objects,dog)
+ if w.cat then add(objects,cat) end
+ if w.dog then add(objects,dog) end
+end
+
 function slot_draw(s)
  local x,y=s.x,s.y
  sh(96+tonum(s.data!=nil),x,y+2)
@@ -598,7 +682,7 @@ function slot_interact(s)
  if s==leaking and p.data!=nil then
   dialog="this memory location is leaking! you must fix it before placing a data cube."
  elseif s==leaking and p.data==nil then
-  dialog="you fix the memory leak.\nlet's hope the cat or dog won't break it again."
+  dialog="you fix the memory leak.\nlet's hope an animal won't break it again."
   leaking=nil
  elseif s.data==nil and p.data!=nil then
   dialog="you place the data cube into the memory location."
@@ -643,14 +727,16 @@ function getscore()
    sc+=1
   end
   --dog
-  if slots[i].data!=nil
+  if wirings[current_wiring].dog
+   and slots[i].data!=nil
    and (slots[i].data==slots[i].wires[1]
    or slots[i].data==slots[i].wires[2]) then
    sc+=1
   end
   --cat
-  if (i<n and slots[i].data==slots[i+1].data)
-   or (i>1 and slots[i].data==slots[i-1].data) then
+  if wirings[current_wiring].cat
+   and ((i<n and slots[i].data==slots[i+1].data)
+   or (i>1 and slots[i].data==slots[i-1].data)) then
    sc-=1
   end
  end
@@ -782,13 +868,13 @@ c77766100777661c007700000007700000007700000000000000000000076000000a900000000000
 000000000000000000066660000000000666600000a00b000000e000000000000aa000000000000000000000000000000077779000aa0aaaaa7777aaaaa00000
 000000000000000000000000000000000000000000aa0bbbbbeee000000000000770000000000000000000000000000000777700000000aa0000000000000000
 00000000000770000000000000000000000000000000000000000000000000000770000000aa000aa0aa0aaa00aa0077707779000aaa00aa00000aaaaa000000
-00000000007777600000000000000000000000000000000000000000000000000770000000aa000aa0aaa09aa0aaa0aaa077700000aa00770000aa999aa00000
-00000000077776600a000a000a0000000000000a0000000000000000000000000aa00000a077000aa077000aa0009a0000aaaa0000770077000077aaaaa00000
-00099000077766600a000a000a0000000000000aa000000000000000000000000aa00000a077000aa077000aa00009a000aaaa00007700aa0000770000000000
-00955990077766400a000a0a0a0a00a0aaa0a00a00a0000000000000000000000aa0000aa0aa00aaa0aa000aa077709aa0aaa0a000aa00aa0aa0aa000aa00000
-09544940097764400a0a09a9aaa09a0aa9aa9a0a0a0a00000000000000000000aaaaaaaaa009aa0770aa000aa0aaa00aa0aaa00a00aa000aaa000aaaaa000000
-04999400049944000090900a0a0a00a0a9a0a000a0a0000000000000000000000000000000000007700000000000000000000000a00000000000000000000000
-0044400000444000000000000000000000000000000000000000000000000000000000000000000aa000000000000000000000000a0000000000000000000000
+000000000077776000000000000000000000000000000000000eeeeeeeccc0000770000000aa000aa0aaa09aa0aaa0aaa077700000aa00770000aa999aa00000
+00000000077776600a000a000a0000000000000a00000000000000000000c0000aa00000a077000aa077000aa0009a0000aaaa0000770077000077aaaaa00000
+00099000077766600a000a000a0000000000000aa00000000000bbbcccccc0000aa00000a077000aa077000aa00009a000aaaa00007700aa0000770000000000
+00955990077766400a000a0a0a0a00a0aaa0a00a00a000000000b000000000000aa0000aa0aa00aaa0aa000aa077709aa0aaa0a000aa00aa0aa0aa000aa00000
+09544940097764400a0a09a9aaa09a0aa9aa9a0a0a0a00000000b00bbaaa0000aaaaaaaaa009aa0770aa000aa0aaa00aa0aaa00a00aa000aaa000aaaaa000000
+04999400049944000090900a0a0a00a0a9a0a000a0a000000000bbbb000a00000000000000000007700000000000000000000000a00000000000000000000000
+0044400000444000000000000000000000000000000000000000000000aa0000000000000000000aa000000000000000000000000a0000000000000000000000
 0aaa000aa00aaa00aaa000a00aaaaa0aaa0aaaaa0aaa00aaa000000000000000000000000000000aa0000000000000000000000000a000000000000000000000
 aaaaa0aaa0aa9aaaa9aa00a00aa99aaa9aaaa9aaaa9aaaa9aa00000000000000000000000077000aa00000000000000000000000000aa0000000000000000000
 aa977aa770aa077aa0770aa00aa000aa00000077aa077aa077000000000000000000000000aa000aa0000000000000000000000000009aa00000000000000000
