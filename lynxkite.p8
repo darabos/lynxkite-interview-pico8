@@ -16,7 +16,6 @@ function _init()
   draw=draw_player,
   update=update_player,
  }
- --into_the_metaverse()
  into_the_title()
 end
 function into_the_office()
@@ -24,12 +23,14 @@ function into_the_office()
  background=draw_office
  f=0
  music(0)
-	contain=function(o)
-	 o.x=mid(4,o.x,116)
-	 o.y=mid(3,o.y,79)
-	end
+ contain=function(o)
+  o.x=mid(4,o.x,116)
+  o.y=mid(3,o.y,79)
+ end
  local whiteboard={
-  interact=function() transition_to(into_the_metaverse) end,
+  interact=function()
+   dialog="you can't wait to write some code here. let's find some task!"
+  end,
   x=60, y=20, draw=draw_whiteboard}
  daniel={x=80, y=30, sprite=17,flip=1,draw=dance,
  interact=function(self)
@@ -56,7 +57,7 @@ function into_the_office()
            whiteboard.interact=function()
             dialog="\f2when you touch the marker to the whiteboard...\n\fethe metaverse\f2 opens up!\nyou fall into the whiteboard!"
             whiteboard.interact=function()
-												 sfx(21)
+             sfx(21)
              transition_to(into_the_metaverse)
             end
            end
@@ -111,6 +112,7 @@ function into_the_title()
   cls(2)
   map(16)
  end
+ music(11)
  contain=function(o)
   o.x=mid(31,o.x,90)
   o.y=mid(48,o.y,79)
@@ -121,16 +123,16 @@ function into_the_title()
  interact=function(s)
   dialog="welcome to lynxkite! you are here to interview for a software engineer role, right?\n❎"
   s.interact=function()
-	  dialog="let me show you the way to the office!\n\n❎"
-	  s.interact=function()
-		  transition_to(function()
-		   p.x=4
-		   p.y=42
+   dialog="let me show you the way to the office!\n\n❎"
+   s.interact=function()
+    transition_to(function()
+     p.x=4
+     p.y=42
      dialog="\npress 🅾️ to dash\npress ❎ to interact"
-		   into_the_office()
-		  end)
-		 end
-	 end
+     into_the_office()
+    end)
+   end
+  end
  end,
  draw=function(o)
   sh(a%2+o.sprite,o.x,o.y,a\2%2==0)
@@ -158,11 +160,11 @@ end
 
 function transition_to(f)
  if transition==nil then
-	 transition={
-	  start=t(),
-	  switch=f,
-	 }
-	end
+  transition={
+   start=t(),
+   switch=f,
+  }
+ end
 end
 function allblack()
  pal({0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0})
@@ -322,9 +324,9 @@ function _draw()
  end
  if wiring_fade and t()-wiring_fade<0.5 then
   for i=1,flr(500*(0.2-t()+dialog_fade)) do
-	  local y=12+rnd(70)
-	  local x1=16-0.1*y
-	  local x2=112+0.1*y
+   local y=12+rnd(70)
+   local x1=16-0.1*y
+   local x2=112+0.1*y
    line(x1,y,x2,y,8+rnd(8))
   end
  end
@@ -499,40 +501,40 @@ function update_pet(o)
  end
  if o.other!=nil then
   --the rnd lets them not get stuck on walls.
-	 dx=o.other.x-o.x+rnd(3)-1.5
-	 dy=o.other.y-o.y+rnd(4)-2
-	 adx=abs(dx)
-	 ady=abs(dy)
+  dx=o.other.x-o.x+rnd(3)-1.5
+  dy=o.other.y-o.y+rnd(4)-2
+  adx=abs(dx)
+  ady=abs(dy)
   ndx=dx>0 and 1 or -1
   ndy=dy>0 and 1 or -1
   ndy/=1.2
-	 if o.mode=="chase" then
-	  if o.flip%2==0 then
-	   o.flip=1-ndx
-	  end
-	  if adx+ady>10
-	   and rnd(100)<follow_chance then
-	   o.x+=2*ndx
-	   o.y+=2*ndy
-	   if rnd(100)<5 then
-	    sfx(o.sfx) end
-	  end
-	  if rnd(100)<1 then
- 	  o.mode=nil
- 	 end
-	 elseif adx<range
-	  and ady<range/1.2 then
-	  if rnd(100)<follow_chance then
-	   o.x-=3*ndx
-	   o.y-=3*ndy
-	   if rnd(100)<5 then
-	    sfx(o.sfx) end
-	   contain(o)
-	  end
-	 elseif o.other.mode!="chase"
-	  and rnd(100)<1 then
-	  o.mode="chase"
-	 end
+  if o.mode=="chase" then
+   if o.flip%2==0 then
+    o.flip=1-ndx
+   end
+   if adx+ady>10
+    and rnd(100)<follow_chance then
+    o.x+=2*ndx
+    o.y+=2*ndy
+    if rnd(100)<5 then
+     sfx(o.sfx) end
+   end
+   if rnd(100)<1 then
+    o.mode=nil
+   end
+  elseif adx<range
+   and ady<range/1.2 then
+   if rnd(100)<follow_chance then
+    o.x-=3*ndx
+    o.y-=3*ndy
+    if rnd(100)<5 then
+     sfx(o.sfx) end
+    contain(o)
+   end
+  elseif o.other.mode!="chase"
+   and rnd(100)<1 then
+   o.mode="chase"
+  end
  end
 end
 
@@ -561,11 +563,11 @@ function into_the_metaverse()
  music(3,nil,7)
  p.alert=nil
  background=draw_metaverse
-	contain=function(o)
-	 o.x=mid(8,o.x,112)
-	 o.y=mid(6,o.y,76)
-	end
-	wirings=getwirings()
+ contain=function(o)
+  o.x=mid(8,o.x,112)
+  o.y=mid(6,o.y,76)
+ end
+ wirings=getwirings()
  dog={
   x=21, y=10, sprite=51,flip=0,draw=dance,
   update=update_pet,sfx=11,
@@ -579,16 +581,28 @@ function into_the_metaverse()
  dog.other=cat
  cat.other=dog
  function daniel_dialog(self)
-  if score<minscore then
-   dialog="here's a hint:\ntry to get a higher score!"
-  elseif current_wiring==5 then
-   if score==12 then
-    dialog="great work! we are done with the interview, but feel free to play around if you like."
-   elseif score<15 then
-    dialog="awesome work! we are done with the interview, but feel free to play around if you like."
-   elseif score>=15 then
+  if current_wiring==5 then
+   if score>=16 then
     dialog="brilliant! you are hired! ♥\n\nplease email lynxkite@lynxkite.com."
+    del(objects,dog)
+    del(objects,cat)
+    if current_music!="hired" then
+     music(14)
+     current_music="hired"
+    end
+   elseif score>=12 then
+    dialog="awesome work! i wonder if it's possible to improve it at all. i'll hold on to our pets if that helps."
+    del(objects,dog)
+    del(objects,cat)
+    if current_music!="good work" then
+     music(13)
+     current_music="good work"
+    end
+   else
+    dialog="here's a hint:\ntry to get a higher score!"
    end
+  elseif score<minscore then
+   dialog="here's a hint:\ntry to get a higher score!"
   else
    local d="great work! ready for the next level?\n\n❎"
    dialog=d
@@ -610,7 +624,7 @@ function into_the_metaverse()
   },
  }
  slots={}
- setwiring(4)
+ setwiring(1)
 end
 function slot(x,y,data,wire)
  return {
@@ -623,67 +637,67 @@ function slot(x,y,data,wire)
 end
 function getwirings()
  return {
-	 {dialog="let's start with a simple example. a linked list with two elements. let's reverse it!",
-	  minscore=2,
-	  x=0,y=40,slots={
-	  slot(40,50,14),
-	  slot(72,24,12),
-	  slot(110,70),
-	 }},
-	 {dialog="each data cube in the correct location is worth 100 points. cubes of the same color are interchangeable.",
-	  minscore=5,
-	  x=40,y=32,slots={
-	  slot(24,40,10),
-	  slot(40,54,11),
-	  slot(57,29,12),
-	  slot(95,29,14),
-	  slot(86,54,10),
-	  slot(110,70),
-	 }},
-	 {dialog="look our dog has joined you! he likes it when wires connect cubes of their color. you get 300 pts for each.",
-	  minscore=6,
-	  dog=true,
-	  x=48,y=48,slots={
-	  slot(20,20,12,12),
-	  slot(75,20,14,14),
-	  slot(54,36,14,11),
-	  slot(65,53,11,14),
-	  slot(76,68,10),
-	  slot(110,70),
-	 }},
-	 {dialog="the cat joins too! she hates data cubes that have the same color on both sides. she takes away 100 pts for each.",
-	  minscore=12,
-	  cat=true,dog=true,
-	  x=32,y=48,slots={
-	  slot(54,29,11,14),
-	  slot(34,29,12,10),
-	  slot(24,40,10,14),
-	  slot(40,53,12,12),
-	  slot(80,53,10,14),
-	  slot(96,40,14,11),
-	  slot(86,29,10,14),
-	  slot(66,29,14),
-	  slot(110,70),
-	 }},
-	 {dialog="your final test! try to score as many points as you can.",
-	  minscore=12,
-	  cat=true,dog=true,
-	  x=40,y=40,slots={
-	  slot(25,70,10,10),
-	  slot(16,55,11,14),
-	  slot(25,40,12,12),
-	  slot(24,18,14,14),
-	  slot(60,13,14,10),
-	  slot(96,26,11,12),
-	  slot(100,53,11,14),
-	  slot(78,70,12,11),
-	  slot(40,55,10,10),
-	  slot(65,30,10,11),
-	  slot(70,54,14,12),
-	  slot(55,42,12),
-	  slot(110,70),
-	 }},
-	}
+  {dialog="let's start with a simple example. a linked list with two elements. let's reverse it!",
+   minscore=2,
+   x=0,y=40,slots={
+   slot(40,50,14),
+   slot(72,24,12),
+   slot(110,70),
+  }},
+  {dialog="each data cube in the correct location is worth 100 points. cubes of the same color are interchangeable.",
+   minscore=5,
+   x=40,y=32,slots={
+   slot(24,40,10),
+   slot(40,54,11),
+   slot(57,29,12),
+   slot(95,29,14),
+   slot(86,54,10),
+   slot(110,70),
+  }},
+  {dialog="look our dog has joined you! he likes it when wires connect cubes of their color. you get 300 pts for each.",
+   minscore=6,
+   dog=true,
+   x=48,y=48,slots={
+   slot(20,20,12,12),
+   slot(75,20,14,14),
+   slot(54,36,14,11),
+   slot(65,53,11,14),
+   slot(76,68,10),
+   slot(110,70),
+  }},
+  {dialog="the cat joins too! she hates data cubes that have the same color on both sides. she takes away 100 pts for each.",
+   minscore=12,
+   cat=true,dog=true,
+   x=32,y=48,slots={
+   slot(54,29,11,14),
+   slot(34,29,12,10),
+   slot(24,40,10,14),
+   slot(40,53,12,12),
+   slot(80,53,10,14),
+   slot(96,40,14,11),
+   slot(86,29,10,14),
+   slot(66,29,14),
+   slot(110,70),
+  }},
+  {dialog="your final test! try to score as many points as you can.",
+   minscore=12,
+   cat=true,dog=true,
+   x=40,y=40,slots={
+   slot(25,70,10,10),
+   slot(16,55,11,14),
+   slot(25,40,14,12),
+   slot(24,18,12,14),
+   slot(60,13,14,10),
+   slot(96,26,11,12),
+   slot(100,53,11,14),
+   slot(78,70,12,11),
+   slot(40,55,10,10),
+   slot(65,30,10,11),
+   slot(70,54,14,12),
+   slot(55,42,12),
+   slot(110,70),
+  }},
+ }
 end
 function setwiring(num)
  current_wiring=num
@@ -698,8 +712,8 @@ function setwiring(num)
   add(objects,s) end)
  del(objects,cat)
  del(objects,dog)
- --if w.cat then add(objects,cat) end
- --if w.dog then add(objects,dog) end
+ if w.cat then add(objects,cat) end
+ if w.dog then add(objects,dog) end
  score=getscore()
 end
 
@@ -721,6 +735,7 @@ function slot_interact(s)
  elseif s==leaking and p.data==nil then
   dialog="you fix the memory leak.\nlet's hope an animal won't break it again."
   leaking=nil
+  sfx(31)
  elseif s.data==nil and p.data!=nil then
   dialog="you place the data cube into the memory location."
   s.data=p.data
@@ -743,8 +758,10 @@ function slot_update(s)
   local adx=abs(s.x-p.x)
   local ady=abs(s.y-p.y)/1.2
   if s.data==nil
-   and adx+ady<5 then
+   and adx+ady<5
+   and leaking!=s then
    leaking=s
+   sfx(30)
   end
  end
  if s==leaking and rnd(100)<50 then
@@ -1080,35 +1097,47 @@ __sfx__
 011800001c0401b030180301c0401b030180301c0401b030180301c0401c030180001c0401b030180301c0401b030180301c0401b030180301c0401c030000000000000000000000000000000000000000000000
 011200000c1401314010140131400c1401314010140101400c140131401014013140181401814018000181000c1401314010140131400c1401314010140101401314013140101401314018140181401810000000
 011200000c5730050018540005000c5702d500265001e500185731650013500125000c5700c50013540095000c5730650018540005000c570005000150000500185730050000500005000c570005001c54518545
-00010000136202c6203663036630326302d630266201e62018620166201362012620106200c6200b6200962007620066200662004620016200161001600006000060000600006000060000600006000060000600
+91010000136202c6203663036630326302d630266201e62018620166201362012620106200c6200b6200962007620066200662004620016200161001600006000060000600006000060000600006000060000600
 0112000005040090200c0200e0200f0400e0200c0200902005040090200c0200e0200f0400e0200c02009020000400402007020090200a040090200702004020000400402007020090200a040090200702004020
 01120000070400b0200e0201004011020100200e0200b04005040090200c0200e0200f0400e0200c02009020000400402007020090200a040090200702004020000400402007020090200a040090200702004020
 0112000011573005001d54000500115702d500265001e50011573165001350012500115700c50015545175450c5730650018540005000c570005000150000500185730050018540005000c570005001054511545
 0112000007573005001354000500075702d500155001350005573165001350012500115700c5000e5401b50500573185001854000500185700050018540005001857000000225452254522545000000000000000
 010c000030571245712b5712d00034000370003a0003a00037000320002f00029000220001c00017000110000b000080000000000000000000000000000000000000000000000000000000000000000000000000
 010c000021071130710c00021071130712d10034000370003a0003a000370001c00017000110000b00021000130002d10034000370003a0003a00037000000000000000000000000000000000000000000000000
-011200003e0253e0253c0253b025340253c025320253e025300253202534025390253b0253b02530025390253e0253e0253c0253b025340253c025320253e025300253202534025390253b0253b0253902500000
-351200001811018120181201812018150181501815018130181101812018120181201815018150181501813015110151201512013120131501315015150171301711017120151201312013150131501815018130
-35120000131101312013120131201315013150131501313013110131201312013120131501315013150131301011010120101200e1200c1500e1500c150111301d1101d1201c1201d1201a1501d1501015013130
+011200003e0153e0153c0153b015340153c015320153e015300153201534015390153b0153b01530015390153e0153e0153c0153b015340153c015320153e015300153201534015390153b0153b0153901500000
+351200001811018120181201812018130181301813018120181101812018120181201813018130181301812015110151201512013120131301313015130171201711017120151201312013130131301813018120
+35120000131101312013120131201313013130131301312013110131201312013120131301313013130131201011010120101200e1200c1300e1300c130111201d1101d1201c1201d1201a1301d1301013013120
 411200000047500405004050247504475004050547500405004750040502475044750547500405004050040500475004050040502475044750040505475004050547500000004750500502475004050040500000
 4d1200003b025390253902535025370253c025320253e0053b0253202539025340253c0253c0053c025390053e0253e0053c0253b0253b02539025340253c0053e0253c025340253b02530025370053002500000
-351200001a1101a1201a1201a1201a1501a1501a1501a1300e1100e1200e1200e1200e1500e1500e1500e13017110171201712015120151501a1501a1501a1301811018120171201512017150171501715017130
+351200001a1101a1201a1201a1201a1301a1301a1301a1200e1100e1200e1200e1200e1300e1300e1300e12017110171201712015120151301a1301a1301a1201811018120171201512017130171301713017120
 411200001347500405004051347511475004050547500405134750040515475174051547500405004050040515475000001547515005134751547505475004050747500000104750e47500475004050040500000
 41120000134750040500405000001047500000000000e4750c475004050540000400134000040015400174003e025004000040000400154000000015400150003e0251540005400004000740000000104000e400
-351200001a1101a1201a1201a1201a1501a1501a1501a1300c1100c1200c1200c1200c1500c1500c1500c13017100171001710015100151001a1001a1001a1001810018100171001510017100171001710017100
+351200001a1101a1201a1201a1201a1301a1301a1301a1200c1100c1200c1200c1200c1300c1300c1300c12017100171001710015100151001a1001a1001a1001810018100171001510017100171001710017100
 010900001a1501a1501d1501d15020150241502715027150002000020000200002002727027270252702527024270242750020000200242702427000200002000020000200002000020000200002000020000200
 05090000240502b0503500000000260502d0500000000000280502f05000000000000000000000000000000029050300500000000000000000000000000000000000000000000000000000000000000000000000
 050900002b0502405035000000002d0502605000000000002f0502805000000000000000000000000000000030050290500000000000000000000000000000000000000000000000000000000000000000000000
+011200002f5550050500505005052d5550050528555005052b555005050050500505245550050500505005052455500005000050000529555000052b55500005265550050500505000052b555000050000500005
+011200002f505005051a555005052d5050050518555005052b5050050517555185551c555005050050500505245050000518555000051d5551c5551a555000051a5550050500505000051a555000050000500005
+01120000180351a0351c0351d0351f0352403524035240351a0351c0351d0351f03523035230352303500000180351a0351c0351d0351f035240352403524035240351f035230351f0351c0351c0351c03500000
+0112000018010180101801018010180102401024010240101a0101a0101d0101d0102301023010230102301018010180101801018010180102401024010240101f0101f01023010230101c0101c0101c0101c010
+01120000000231800318003000230c023000000002300000000230002318003000230c023000000002300000000231800318003000230c023000000002300000000230002300023000230c023000000002300000
+95120000181201a1001c1201d1001f1202410024120241001a1201c1001d1201f10023120231002312000100181201a1001c1201d1001f120241002412024100241201f100231201f1001c1201c1001c12000100
+04040000045570255702557045570555707557095570e5571155713557185571a5571d55723557265572b5572d557325573255735557365573855737557365473554736537375373751737517385173851739517
+0404000038557345573355733557335573355732557315572e5572b55726557225571e5571b557185571655714557115570e5570d5570b5570955708557075470654706537065370551705517055170551705517
 __music__
 01 01424304
 00 06424308
 02 07424309
 01 4d0c4344
 00 0d0c0e44
-00 0d0c0e0f
-00 11100e12
-00 0d0c0e0f
-00 11100e12
-00 0d0c0e0f
+00 0d0c0f0e
+00 1110120e
+00 0d0c0f0e
+00 1110120e
+00 0d0c0f0e
 02 13144344
+01 18424344
+02 18194344
+03 1a1b1c44
+03 1a1b1d44
 
