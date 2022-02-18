@@ -583,7 +583,7 @@ function into_the_metaverse()
  cat.other=dog
  function daniel_dialog(self)
   if current_wiring==5 then
-   if score>=16 then
+   if score>=17 then
     dialog="brilliant! you are hired! ♥\n\nplease email lynxkite@lynxkite.com."
     del(objects,dog)
     del(objects,cat)
