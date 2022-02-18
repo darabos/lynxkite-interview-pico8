@@ -311,7 +311,7 @@ function _draw()
   dialog_fade=t()
   last_dialog=dialog
  end
- if t()-dialog_fade<0.2 then
+ if transition==nil and t()-dialog_fade<0.2 then
   for i=1,flr(500*(0.2-t()+dialog_fade)) do
    local y=99+rnd(27)
    line(2,y,125,y,15)
@@ -322,7 +322,7 @@ function _draw()
   wiring_fade=t()
   last_wiring=current_wiring
  end
- if wiring_fade and t()-wiring_fade<0.5 then
+ if transition==nil and wiring_fade and t()-wiring_fade<0.5 then
   for i=1,flr(500*(0.2-t()+dialog_fade)) do
    local y=12+rnd(70)
    local x1=16-0.1*y
