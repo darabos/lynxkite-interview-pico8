@@ -568,6 +568,7 @@ function into_the_metaverse()
   o.y=mid(6,o.y,76)
  end
  wirings=getwirings()
+ hint_phase=0
  dog={
   x=21, y=10, sprite=51,flip=0,draw=dance,
   update=update_pet,sfx=11,
@@ -599,10 +600,10 @@ function into_the_metaverse()
      current_music="good work"
     end
    else
-    dialog="here's a hint:\ntry to get a higher score!"
+    showhint()
    end
   elseif score<minscore then
-   dialog="here's a hint:\ntry to get a higher score!"
+   showhint()
   else
    local d="great work! ready for the next level?\n\n❎"
    dialog=d
@@ -626,6 +627,28 @@ function into_the_metaverse()
  slots={}
  setwiring(1)
 end
+
+function showhint()
+ dialog="here's a hint:\ntry to get a higher score!"
+ if hint_phase==1 then
+  dialog=dialog.."\ndata cubes in the right memory location are worth 100 points."
+ elseif hint_phase==2 then
+  dialog=dialog.."\ncubes matching the wire between them give 300 points."
+ elseif hint_phase==3 then
+  dialog=dialog.."\nif the neighbors of a cube match you lose 100 points."
+ elseif hint_phase==4 then
+  dialog=dialog.."\npress 🅾️ to dash if our pets bother you."
+ end
+ hint_phase+=1
+ if wirings[current_wiring].cat then
+  hint_phase%=5
+ elseif wirings[current_wiring].dog then
+  hint_phase%=3
+ else
+  hint_phase%=2
+ end
+end
+
 function slot(x,y,data,wire)
  return {
   x=x,y=y,data=data,
